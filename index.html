@@ -3,156 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShieldPi - Ecosistema Pi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500&display=swap" rel="stylesheet">
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <title>ShieldPi - Guardian Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-green: #39FF14;
-            --pi-purple: #bc26ff;
-            --star-blue: #00d4ff;
-            --deep-space: #050010;
+            --pi-purple: #543391; /* Morado oficial Pi Network */
+            --cyan-neon: #00f2ff; /* Cyan para el aura y escáner */
+            --bg-dark: #0a0b10;
         }
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--deep-space); 
-            font-family: 'Rajdhani', sans-serif;
-            overflow: hidden; color: white;
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
 
-        /* FONDO: Universo Dinámico */
-        #universe {
-            position: fixed; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1a0033 0%, #050010 100%);
-            z-index: -1;
-        }
-
-        /* Iconos Cósmicos */
-        .cosmic-icon {
-            position: absolute; opacity: 0.6;
-            animation: twinkle 4s infinite ease-in-out;
-            color: var(--star-blue);
-            filter: drop-shadow(0 0 5px var(--star-blue));
-            user-select: none;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
-            50% { opacity: 0.9; transform: scale(1.2) rotate(10deg); }
-        }
-
-        /* INTERFAZ CENTRAL */
-        .app-container {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; height: 100vh;
-            perspective: 1000px;
-        }
-
-        .title-container { 
-            margin-bottom: 30px; 
-            font-family: 'Orbitron', sans-serif;
-            text-align: center;
-        }
-        
-        .shield-text { color: var(--neon-green); font-size: 42px; font-weight: bold; letter-spacing: 8px; }
-        .pi-text { color: var(--pi-purple); font-size: 42px; font-weight: bold; text-shadow: 0 0 20px var(--pi-purple); }
-
-        /* EL ESCUDO CENTRAL MEJORADO */
-        .shield-center {
+        /* Aura de Energía Cyan */
+        .shield-aura {
             position: relative;
-            width: 180px; height: 210px;
-            background: rgba(188, 38, 255, 0.05);
-            border: 3px solid var(--neon-green);
-            box-shadow: 0 0 30px rgba(57, 255, 20, 0.3), inset 0 0 20px rgba(0, 212, 255, 0.2);
-            clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%);
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.3s ease;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(0, 242, 255, 0.1) 0%, transparent 75%);
+            box-shadow: 0 0 60px rgba(0, 242, 255, 0.05);
+            transition: all 0.5s ease;
         }
 
-        .shield-center:hover {
-            transform: scale(1.05) rotateY(10deg);
-        }
-
-        /* Efecto de Escáner Láser */
-        .shield-center::after {
-            content: "";
+        /* Borde Neón Giratorio Cyan */
+        .shield-border {
             position: absolute;
-            top: -100%; width: 100%; height: 20%;
-            background: linear-gradient(to bottom, transparent, var(--neon-green), transparent);
-            opacity: 0.5;
-            animation: scan 3s infinite linear;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px dashed var(--cyan-neon);
+            animation: rotate 25s linear infinite;
+            box-shadow: 0 0 15px var(--cyan-neon), inset 0 0 10px var(--cyan-neon);
+            opacity: 0.7;
         }
 
-        @keyframes scan {
-            0% { top: -20%; }
-            100% { top: 120%; }
-        }
-
-        .pi-logo-center {
-            font-size: 90px; color: var(--pi-purple);
-            filter: drop-shadow(0 0 15px var(--pi-purple));
+        /* Línea de Escaneo Cyan */
+        .scanner-line {
+            position: absolute;
+            width: 75%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--cyan-neon), transparent);
+            box-shadow: 0 0 15px var(--cyan-neon);
+            top: 20%;
+            animation: scan 3.5s ease-in-out infinite;
             z-index: 2;
-            animation: pulse-pi 2s infinite ease-in-out;
         }
 
-        @keyframes pulse-pi {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        /* BOTÓN RETRO-FUTURISTA */
-        .btn-retro {
-            margin-top: 50px;
-            padding: 20px 50px;
-            background: rgba(57, 255, 20, 0.1);
-            color: var(--neon-green);
-            border: 2px solid var(--neon-green);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px; font-weight: bold;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        /* Botón Central Pi - Ahora Morado */
+        .pi-button {
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(145deg, var(--pi-purple), #3b2366);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
-            position: relative;
-            transition: all 0.3s;
-            letter-spacing: 2px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Crimson Pro', serif; /* Fuente para Pi tradicional */
+            font-size: 75px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(84, 51, 145, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .btn-retro:hover {
-            background: var(--neon-green);
-            color: black;
-            box-shadow: 0 0 40px var(--neon-green);
+        .pi-button:active { 
+            transform: scale(0.92);
+            box-shadow: 0 0 40px var(--pi-purple);
+        }
+
+        /* Panel de Estado */
+        .status-panel {
+            margin-top: 30px;
+            text-align: center;
+            letter-spacing: 1.5px;
+        }
+
+        #msg {
+            font-weight: bold;
+            color: var(--cyan-neon);
+            text-shadow: 0 0 5px var(--cyan-neon);
+            margin-bottom: 5px;
+        }
+
+        #health {
+            font-family: monospace;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Menú Inferior Modernizado */
+        .menu-grid {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 85%;
+            max-width: 380px;
+        }
+
+        .menu-item {
+            background: rgba(84, 51, 145, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 16px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .menu-item:hover {
+            background: rgba(84, 51, 145, 0.25);
+            border-color: var(--cyan-neon);
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.1);
         }
 
-        /* EXALTACIÓN FINAL */
-        .exaltation {
-            margin-top: 40px; font-size: 14px; color: var(--star-blue);
-            text-align: center; max-width: 350px; line-height: 1.6;
-            text-transform: uppercase; letter-spacing: 2px;
-            border-top: 1px solid rgba(0, 212, 255, 0.3);
-            padding-top: 15px;
+        /* Animaciones */
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes scan { 
+            0%, 100% { top: 25%; opacity: 0; }
+            50% { top: 75%; opacity: 1; }
         }
 
-        /* Datos de fondo */
-        .data-stream {
-            position: absolute; color: var(--neon-green);
-            font-size: 10px; font-family: monospace;
-            white-space: nowrap; opacity: 0.4;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <div id="universe"></div>
+    <div class="shield-aura">
+        <div class="shield-border"></div>
+        <div class="scanner-line"></div>
+        <button class="pi-button" onclick="diagnostico()">π</button>
+    </div>
 
-    <div class="app-container">
-        <div class="title-container">
-            <span class="shield-text">SHIELD</span><span class="pi-text">PI</span>
-        </div>
+    <div class="status-panel">
+        <div id="msg">SHIELDPI: READY</div>
+        <div id="health">NODE HEALTH: 0%</div>
+    </div>
 
-        <div class="shield-center">
-            <div class="pi-logo-center">π</div>
-        </div>
+    <div class="menu-grid">
+        <div class="menu-item" onclick="alert('Iniciando Simulador Nodo...')">Nodo Pi</div>
+        <div class="menu-item" onclick="alert('Iniciando Academia...')">Seguridad</div>
+        <div class="menu-item" onclick="alert('Optimizando para IA...')">IA Optimizer</div>
+        <div class="menu-item" onclick="alert('Cargando Biblioteca Scams...')">Anti-Scam</div>
+    </div>
 
-        <button class="btn-retro" onclick="initPi()">INICIAR PROTOC
+    <script>
+        function diagnostico() {
+            const msg = document.getElementById('msg');
+            const health = document.getElementById('health');
+            const aura = document.querySelector('.shield-aura');
+            
+            msg.innerText = "ESCANEO EN CURSO...";
+            msg.style.color = "#ffffff";
+            
+            let prog = 0;
+            const interval = setInterval(() => {
+                prog += 2;
+                health.innerText = `NODE HEALTH: ${prog}%`;
+                
+                if(prog >= 100) {
+                    clearInterval(interval);
+                    msg.innerText = "SISTEMA PROTEGIDO";
+                    msg.style.color = "var(--cyan-neon)";
+                    // Efecto de pulso al terminar
+                    aura.style.boxShadow = "0 0 80px rgba(0, 242, 255, 0.3)";
+                    setTimeout(() => {
+                        aura.style.boxShadow = "0 0 50px rgba(0, 242, 255, 0.1)";
+                    }, 500);
+                }
+            }, 50);
+        }
+    </script>
+</body>
+</html>
